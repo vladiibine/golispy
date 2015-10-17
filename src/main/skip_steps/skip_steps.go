@@ -3,16 +3,12 @@ import (
 	"main/scopes"
 	"main/interpreter"
 	"main/lexer"
+	"main/parser"
 )
 
-func InterpretText(text string, scope *scopes.IScope){
-	interpreter.InterpretAst(
-		parser.GetAstFromCst(
-			lexer.GetCstFromTokens(
-				lexer.GetFlatTokenList(
-
-				)
-			)
-		)
-	)
+func InterpretText(text string, scope *scopes.IScope) {
+	tokens := lexer.GetFlatTokenList(text)
+	cstree := lexer.GetCstFromTokens(&tokens)
+	astree := parser.GetAstFromCst(cstree)
+	interpreter.InterpretAst(astree, scope)
 }

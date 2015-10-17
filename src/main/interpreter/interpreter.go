@@ -5,6 +5,6 @@ import (
 	"main/types"
 )
 
-func InterpretAst(astree ast.Ast, scope *scopes.IScope) types.Type{
+func InterpretAst(astree *ast.AstNode, scope *scopes.IScope) types.IType {
 
 }
