@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"main/scopes"
+	"main/skip_steps"
 )
 
 const GREETING = "----------<Welcome to the Golispy interpreter>----------"
@@ -13,8 +14,7 @@ const PS1 = "(GL)$"
 func getUerInput() string {
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
-	_ = text
-	return "nothing implemented yet, lol"
+	return text
 }
 
 func Repl(){
@@ -23,7 +23,7 @@ func Repl(){
 	for {
 		fmt.Println(PS1)
 		text := getUerInput()
-
-		fmt.Println(text)
+		result := skip_steps.InterpretText(text, scope)
+		fmt.Println(result.String())
 	}
 }

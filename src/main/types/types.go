@@ -4,50 +4,45 @@ import "strconv"
 type Int struct {
 	Value int
 }
-func (i *Int)String() string{
+func (i Int)String() string{
 	return strconv.Itoa(i.Value)
 }
-func (i *Int)IsContainer() bool{
-	return false
+
+type NILType struct {
+}
+func (n *NILType)String() string {
+	return "NILType"
 }
 
-// Not what you might think: It's a container of 1 element
-type List struct {
-	Value IType
-}
-func (l *List)String() string{
-	return "(" + l.Value.String() + ")"
-}
-func (l *List)IsContainer() bool{
-	return true
-}
 
 type Pair struct {
 	Head IType
-	Tail IType
+	Tail IType // restriction: this must return only false
 }
 func (p *Pair)String() string{
-	return "( " + p.Head.String() + " " + p.Tail.String() + " )"
+	// If Tail is neither NIL nor a pair, we put the '.'
+	return "( " + p.Head.String() + " . " + p.Tail.String() + " )"
 }
-func (p *Pair)IsContainer() bool {
-	return true
-}
+func (p *Pair)Container(){ } // marks this is an IPair
+
 
 /**
-	List: it's a container of 1 object
+Ok... so there's no qualitative difference between a CONS pair and a LIST
+	...Cons pairs hold just data in their CDR
+	 	lists hold either references to other cons, OR nil
 
-	Pair: Head|Tail
-		repr: if the tail is a pair or a list (a container) " (<head> <tail>) "
-				else: " (<head> . <tail>)"
-	!!!TODO!!!!
-		- (2 (3 (1))) != (2 3 1)
-		- `cons` returns a pair, which IS a list, extended
-		- `list` however, creates a new list with 2 elements, the the head, and the tail
+	So (list 1) is the same type and structure as (cons 1 Nil)
+	And (list 1 2) is (cons 1 (cons 2 NIL))
+
+	So therefore the `list` function must do funny stuff, while `cons` simply
+	acts natural
  */
 
 type IType interface {
 	String() string
-	IsContainer() bool
 }
 
-/**
+type IPair interface {
+	IType
+	Container() // marker method... just to have some static checking
+}

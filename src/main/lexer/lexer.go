@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"strings"
 	"main/cst"
+//	"fmt"
+	"fmt"
 )
 
 type TokenType int
@@ -16,10 +18,10 @@ const (
 
 type Token struct {
 	Type TokenType
-	Value interface{} // dunno if I should defer the conversion, but I don't
+	Value interface{} // dunno if I should defer the conversion, but I do
 }
 
-const SOURCE_PATTERNS = createSourcePatterns()
+var SOURCE_PATTERNS = createSourcePatterns()
 
 func createSourcePatterns()map[*regexp.Regexp]func(string)Token{
 	result := make(map[*regexp.Regexp]func(string)Token)
@@ -44,7 +46,7 @@ func createSourcePatterns()map[*regexp.Regexp]func(string)Token{
 // Takes a string and tokenizes it
 func GetFlatTokenList(text string) []Token{
 	var tokens []Token
-	remaining_text := strings.TrimLeft(text, " \n\t")
+	remaining_text := strings.Trim(text, " \n\t\r\u000a")
 	last_iteration_text := remaining_text
 
 	for len(remaining_text) > 0 {
@@ -54,41 +56,43 @@ func GetFlatTokenList(text string) []Token{
 				continue
 			}
 			token := converter(remaining_text[match[0]:match[1]])
+			fmt.Println("appended ", token)
 			tokens = append(tokens, token)
 			// cut out the regex match
 			remaining_text = remaining_text[match[1]:]
 			break
 		}
+		println(remaining_text == "\u000a")
 		if last_iteration_text == remaining_text{
 			panic("loool... we couldn't find any match for the text")
 		}
-		last_iteration_text = remaining_text
+		last_iteration_text = strings.Trim(remaining_text, " \n\t\r\u000a")
 	}
 	return tokens
 }
 
 // Takes a slice of tokens, and returns a concrete syntax tree
-func GetCstFromTokens(tokens *[]Token) cst.CSTNode {
-	var current_children = []cst.CSTNode
+func GetCstFromTokens(tokens []Token) cst.CSTNode {
+	var current_children []cst.CSTNode
 
-	cstree := cst.CSTNode{Children: &current_children}
+	cstree := cst.CSTNode{Children: current_children}
 
-	for _, token := range *tokens{
+	for _, token := range tokens{
 		if token.Type == Integer {
 			// Add a new child of Integer type to the list of children
 			current_value := cst.CSTElement{Type:cst.Integer, Value:token.Value}
 			current_child := cst.CSTNode{Value: &current_value}
-			cstree.Children = &append(*cstree.Children, current_child)
-
+			cstree.Children = append(cstree.Children, current_child)
 		} else if token.Type == Increment {
 			// Add a new CSTNode element in the children list, and point to it
 			current_child := cst.CSTNode{Parent: &cstree}
-			cstree.Children = &append(*cstree.Children, current_child)
+			cstree.Children = append(cstree.Children, current_child)
 			cstree = current_child
 		} else if token.Type == Decrement {
 			// Point to the parent of the current node
 			cstree = *cstree.Parent
 		}
 	}
+	fmt.Println(">>>VWH lexer.gcft, cstree.children[0].value.value", cstree.Children[0].Value.Value)
 	return cstree
 }

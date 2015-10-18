@@ -13,6 +13,6 @@ type CSTElement struct {
 //
 type CSTNode struct {
 	Value *CSTElement
-	Children *[]CSTNode
+	Children []CSTNode
 	Parent *CSTNode
 }

@@ -5,6 +5,7 @@ import (
 	"main/types"
 )
 
-func InterpretAst(astree *ast.AstNode, scope *scopes.IScope) types.IType {
-
+func InterpretAst(astree ast.IAstNode, scope scopes.IScope) types.IType {
+	instance := astree.ToLisp()
+	return instance
 }

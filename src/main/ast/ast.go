@@ -5,17 +5,20 @@ import (
 
 type AstType int
 const(
-	Integer AstType = iota
+	IntegerType AstType = iota
 )
 
 type Int struct {
 	Value int
 }
 func (i Int)ToLisp()types.IType {
-
+	return types.Int{Value: i.Value}
+}
+func (i Int) GetChildren()[]IAstNode {
+	return nil
 }
 
-type AstNode interface {
+type IAstNode interface {
 	ToLisp() types.IType
-	GetChildren() []AstNode
+	GetChildren() []IAstNode
 }
