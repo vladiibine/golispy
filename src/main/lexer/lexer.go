@@ -5,7 +5,6 @@ import (
 	"strings"
 	"main/cst"
 //	"fmt"
-	"fmt"
 )
 
 type TokenType int
@@ -56,13 +55,13 @@ func GetFlatTokenList(text string) []Token{
 				continue
 			}
 			token := converter(remaining_text[match[0]:match[1]])
-			fmt.Println("appended ", token)
+//			fmt.Println("appended ", token)
 			tokens = append(tokens, token)
 			// cut out the regex match
 			remaining_text = remaining_text[match[1]:]
 			break
 		}
-		println(remaining_text == "\u000a")
+//		println(remaining_text == "\u000a")
 		if last_iteration_text == remaining_text{
 			panic("loool... we couldn't find any match for the text")
 		}
@@ -75,14 +74,17 @@ func GetFlatTokenList(text string) []Token{
 func GetCstFromTokens(tokens []Token) cst.CSTNode {
 	var current_children []cst.CSTNode
 
-	cstree := cst.CSTNode{Children: current_children}
+	cstree := cst.CSTNode{Children: current_children, Container:true}
 
 	for _, token := range tokens{
 		if token.Type == Integer {
-			// Add a new child of Integer type to the list of children
 			current_value := cst.CSTElement{Type:cst.Integer, Value:token.Value}
-			current_child := cst.CSTNode{Value: &current_value}
-			cstree.Children = append(cstree.Children, current_child)
+			if cstree.Container {
+				new_child := cst.CSTNode{Value: &current_value}
+				cstree.Children = append(cstree.Children, new_child)
+			} else {
+				cstree.Value = &current_value
+			}
 		} else if token.Type == Increment {
 			// Add a new CSTNode element in the children list, and point to it
 			current_child := cst.CSTNode{Parent: &cstree}
@@ -93,6 +95,5 @@ func GetCstFromTokens(tokens []Token) cst.CSTNode {
 			cstree = *cstree.Parent
 		}
 	}
-	fmt.Println(">>>VWH lexer.gcft, cstree.children[0].value.value", cstree.Children[0].Value.Value)
 	return cstree
 }

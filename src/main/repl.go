@@ -9,7 +9,9 @@ import (
 
 const GREETING = "----------<Welcome to the Golispy interpreter>----------"
 
-const PS1 = "(GL)$"
+const PS1 = "(GL)$ "
+const PS2 = "..... "
+const PS3 = "(GL)> "
 
 func getUerInput() string {
 	reader := bufio.NewReader(os.Stdin)
@@ -21,9 +23,9 @@ func Repl(){
 	fmt.Println(GREETING, "\n")
 	scope := new(scopes.Scope)
 	for {
-		fmt.Println(PS1)
+		fmt.Print(PS1)
 		text := getUerInput()
 		result := skip_steps.InterpretText(text, scope)
-		fmt.Println(result.String())
+		fmt.Println(PS3, result.String(), "\n")
 	}
 }

@@ -19,9 +19,13 @@ type Pair struct {
 	Head IType
 	Tail IType // restriction: this must return only false
 }
-func (p *Pair)String() string{
+func (p Pair)String() string{
 	// If Tail is neither NIL nor a pair, we put the '.'
-	return "( " + p.Head.String() + " . " + p.Tail.String() + " )"
+	var head, tail string
+
+	if p.Head != nil {head = p.Head.String()} else {head = "NIL"}
+	if p.Tail != nil {tail = p.Tail.String()} else {tail = "NIL"}
+	return "( " + head + " . " + tail + " )"
 }
 func (p *Pair)Container(){ } // marks this is an IPair
 

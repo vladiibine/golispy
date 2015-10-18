@@ -12,6 +12,7 @@ type CSTElement struct {
 
 //
 type CSTNode struct {
+	Container bool		// whether this node has a value, or just children
 	Value *CSTElement
 	Children []CSTNode
 	Parent *CSTNode
